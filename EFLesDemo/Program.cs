@@ -1,9 +1,111 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
+using EFLesDemo;
 using EFLesDemo.Entities;
 using Microsoft.EntityFrameworkCore;
+using Spectre.Console;
 
+
+
+InitializeDatabase();
+ConsoleLoop();
+
+AnsiConsole.Clear();
+void ConsoleLoop()
 {
+    var choice = AnsiConsole.Prompt(
+        new SelectionPrompt<Choices>()
+            .Title("Please select a [green]option[/]:")
+            .AddChoices(Enum.GetValues<Choices>())
+    );
+
+    AnsiConsole.Clear();
+    AnsiConsole.MarkupLine($"You selected [yellow]{choice}.[/]");
+    
+    switch (choice)
+    {
+        case Choices.DisplayAllScrumboards:
+            var scrumboards = ScrumboardRepository.LoadScrumboardWithColumnAndCards();
+            scrumboards.ForEach(ScrumboardConsoleUtils.RenderScrumboard);
+            break;
+        case Choices.DisplayScrumboardWithId:
+        {
+            var scumboardId = AnsiConsole.Ask<int>("Please enter a scrumboard ID to display:");
+            var scrumboard = ScrumboardRepository.LoadScrumboardWithColumnAndCardsById(scumboardId);
+            if (scrumboard is not null)
+            {
+                ScrumboardConsoleUtils.RenderScrumboardGrid(scrumboard);
+            }
+            else
+            {
+                AnsiConsole.MarkupLine($"No Scrumboard found for ID: {scumboardId}.");
+            }
+            break;
+        }
+        case Choices.DeleteScrumboard:
+        {
+            var scumboardId = AnsiConsole.Ask<int>("Please Enter a scrumboard ID to delete:");
+            ScrumboardRepository.DeleteScrumboard(scumboardId);
+            break;
+        }
+        case Choices.DeleteScrumCard:
+        {
+            var scumboardId = AnsiConsole.Ask<int>("Please enter a scrumboard ID to display:");
+            var scrumboard = ScrumboardRepository.LoadScrumboardWithColumnAndCardsById(scumboardId);
+            if (scrumboard is not null)
+            {
+                ScrumboardConsoleUtils.RenderScrumboardGrid(scrumboard);
+            }
+            else
+            {
+                AnsiConsole.MarkupLine($"No Scrumboard found for ID: {scumboardId}.");
+            }
+            
+            var scrumCardId = AnsiConsole.Ask<int>("Please Enter a card ID to delete:");
+            var deleteCard = ScrumboardRepository.DeleteScrumCard(scrumCardId);
+            if (deleteCard is null) break;
+            
+            scrumboard = ScrumboardRepository.LoadScrumboardWithColumnAndCardsById(scumboardId);
+            if (scrumboard != null) ScrumboardConsoleUtils.RenderScrumboardGrid(scrumboard);
+            break;
+        }
+        case Choices.AddCard:
+        {
+            var scrumboardId = AnsiConsole.Ask<int>("Please enter a scrumboard ID to add a card to:");
+            var scrumboard = ScrumboardRepository.LoadScrumboardWithColumnAndCardsById(scrumboardId);
+            if (scrumboard is null) break;
+            
+            ScrumboardConsoleUtils.RenderScrumboardGrid(scrumboard);
+            
+            var columnId = AnsiConsole.Ask<int>("Please enter a column ID to add the card to:");
+
+            var cardToAdd = new Card()
+            {
+                Name = AnsiConsole.Ask<string>("Enter the name of the card to be added:"),
+                ScrumboardColumnId = scrumboardId
+            };
+            ScrumboardRepository.AddCard(cardToAdd);
+
+            scrumboard = ScrumboardRepository.LoadScrumboardWithColumnAndCardsById(scrumboardId);
+            if (scrumboard is not null) break;
+            
+            ScrumboardConsoleUtils.RenderScrumboardGrid(scrumboard);
+            
+            break;
+        } 
+        case Choices.Exit: 
+            AnsiConsole.MarkupLine("[red]Exiting...[/]");
+            return;
+    }    
+    ConsoleLoop();
+}
+
+
+
+
+
+
+static void InitializeDatabase() {
     var db = new ScrumboardDbContext();
 
     db.Database.EnsureDeleted();
@@ -14,23 +116,20 @@ using Microsoft.EntityFrameworkCore;
     db.SaveChanges();
 }
 
-{
-    var db2 = new ScrumboardDbContext();
-    var scrumboards = db2.Scrumboards
-        .Include(x => x.Columns)
-        .ThenInclude(x => x.Cards)
-        .ToList();
 
-    foreach (var scrumboard in scrumboards)
-    {
-        Console.WriteLine($"Board: {scrumboard.Name}");
-        foreach (var column in scrumboard.Columns)
-        {
-            Console.WriteLine($"    Col:    {column.Name}");
-            foreach (var card in column.Cards)
-            {
-                Console.WriteLine($"        Card:        {card.Name}");
-            }
-        }
-    }
+
+
+
+
+
+
+
+enum Choices
+{
+    DisplayScrumboardWithId,
+    DisplayAllScrumboards,
+    DeleteScrumboard,
+    Exit,
+    DeleteScrumCard,
+    AddCard
 }
