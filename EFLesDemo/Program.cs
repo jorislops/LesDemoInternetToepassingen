@@ -3,7 +3,7 @@
 using EFLesDemo;
 using EFLesDemo.Entities;
 using Spectre.Console;
-
+using ScrumboardService = EFLesDemo.ScrumboardService;
 
 
 InitializeDatabase();
