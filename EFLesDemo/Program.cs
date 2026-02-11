@@ -9,29 +9,8 @@ using Microsoft.EntityFrameworkCore;
     db.Database.EnsureDeleted();
     db.Database.EnsureCreated();
 
-    db.Scrumboards.Add(new Scrumboard()
-    {
-        Name = "My Scrumboard",
-        Columns = new List<ScrumboardColumn>()
-        {
-            new ScrumboardColumn
-            {
-                Name = "Col 1",
-                Cards = new List<Card>()
-                {
-                    new Card
-                    {
-                        Name = "Card 1",
-                    },
-                    new Card
-                    {
-                        Name = "Card 2",
-                    }
-                },
-            }
-        }
-    });
-
+    var scrumboard = DBSeeder.Seed();
+    db.Scrumboards.AddRange(scrumboard);
     db.SaveChanges();
 }
 
@@ -44,13 +23,13 @@ using Microsoft.EntityFrameworkCore;
 
     foreach (var scrumboard in scrumboards)
     {
-        Console.WriteLine(scrumboard.Name);
+        Console.WriteLine($"Board: {scrumboard.Name}");
         foreach (var column in scrumboard.Columns)
         {
-            Console.WriteLine($"  {column.Name}");
+            Console.WriteLine($"    Col:    {column.Name}");
             foreach (var card in column.Cards)
             {
-                Console.WriteLine($"    {card.Name}");
+                Console.WriteLine($"        Card:        {card.Name}");
             }
         }
     }
