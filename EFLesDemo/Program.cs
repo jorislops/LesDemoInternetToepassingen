@@ -2,7 +2,6 @@
 
 using EFLesDemo;
 using EFLesDemo.Entities;
-using Microsoft.EntityFrameworkCore;
 using Spectre.Console;
 
 
@@ -121,18 +120,12 @@ void ConsoleLoop()
             
             break;
         } 
-        
         case Choices.Exit: 
             AnsiConsole.MarkupLine("[red]Exiting...[/]");
             return;
     }    
     ConsoleLoop();
 }
-
-
-
-
-
 
 static void InitializeDatabase() {
     var db = new ScrumboardDbContext();
@@ -144,14 +137,6 @@ static void InitializeDatabase() {
     db.Scrumboards.AddRange(scrumboard);
     db.SaveChanges();
 }
-
-
-
-
-
-
-
-
 
 enum Choices
 {
