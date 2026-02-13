@@ -30,7 +30,7 @@ public class Card
     
     public int Order { get; set; }
     
-    public required int ScrumboardColumnId { get; set; }
+    public int ScrumboardColumnId { get; set; }
     public ScrumboardColumn ScrumboardColumn { get; set; }
 }
 

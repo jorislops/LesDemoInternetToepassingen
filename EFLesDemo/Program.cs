@@ -10,6 +10,23 @@ InitializeDatabase();
 ConsoleLoop();
 
 AnsiConsole.Clear();
+
+static ScrumboardRepository CreateScrumboardRepository()
+{
+    var db = new ScrumboardDbContext();
+    var scrumboardRepository = new ScrumboardRepository(db);
+    return scrumboardRepository;
+}
+
+static ScrumboardService CreateScrumboardService()
+{
+    var db = new ScrumboardDbContext();
+    var scrumboardService = new ScrumboardService(db);
+    return scrumboardService;
+}
+
+
+
 void ConsoleLoop()
 {
     var choice = AnsiConsole.Prompt(
@@ -24,13 +41,13 @@ void ConsoleLoop()
     switch (choice)
     {
         case Choices.DisplayAllScrumboards:
-            var scrumboards = ScrumboardRepository.LoadScrumboardWithColumnAndCards();
+            var scrumboards = CreateScrumboardRepository().LoadScrumboardWithColumnAndCards();
             scrumboards.ForEach(ScrumboardConsoleUtils.RenderScrumboard);
             break;
         case Choices.DisplayScrumboardWithId:
         {
             var scumboardId = AnsiConsole.Ask<int>("Please enter a scrumboard ID to display:");
-            var scrumboard = ScrumboardRepository.LoadScrumboardWithColumnAndCardsById(scumboardId);
+            var scrumboard = CreateScrumboardRepository().LoadScrumboardWithColumnAndCardsById(scumboardId);
             if (scrumboard is not null)
             {
                 ScrumboardConsoleUtils.RenderScrumboardGrid(scrumboard);
@@ -44,13 +61,13 @@ void ConsoleLoop()
         case Choices.DeleteScrumboard:
         {
             var scumboardId = AnsiConsole.Ask<int>("Please Enter a scrumboard ID to delete:");
-            ScrumboardRepository.DeleteScrumboard(scumboardId);
+            CreateScrumboardRepository().DeleteScrumboard(scumboardId);
             break;
         }
         case Choices.DeleteScrumCard:
         {
             var scumboardId = AnsiConsole.Ask<int>("Please enter a scrumboard ID to display:");
-            var scrumboard = ScrumboardRepository.LoadScrumboardWithColumnAndCardsById(scumboardId);
+            var scrumboard = CreateScrumboardRepository().LoadScrumboardWithColumnAndCardsById(scumboardId);
             if (scrumboard is not null)
             {
                 ScrumboardConsoleUtils.RenderScrumboardGrid(scrumboard);
@@ -61,17 +78,17 @@ void ConsoleLoop()
             }
             
             var scrumCardId = AnsiConsole.Ask<int>("Please Enter a card ID to delete:");
-            var deleteCard = ScrumboardRepository.DeleteScrumCard(scrumCardId);
+            var deleteCard = CreateScrumboardRepository().DeleteScrumCard(scrumCardId);
             if (deleteCard is null) break;
             
-            scrumboard = ScrumboardRepository.LoadScrumboardWithColumnAndCardsById(scumboardId);
+            scrumboard = CreateScrumboardRepository().LoadScrumboardWithColumnAndCardsById(scumboardId);
             if (scrumboard != null) ScrumboardConsoleUtils.RenderScrumboardGrid(scrumboard);
             break;
         }
         case Choices.AddCardToTheEndOfColumn:
         {
             var scrumboardId = AnsiConsole.Ask<int>("Please enter a scrumboard ID to add a card to:");
-            var scrumboard = ScrumboardRepository.LoadScrumboardWithColumnAndCardsById(scrumboardId);
+            var scrumboard = CreateScrumboardRepository().LoadScrumboardWithColumnAndCardsById(scrumboardId);
             if (scrumboard is null) break;
             
             ScrumboardConsoleUtils.RenderScrumboardGrid(scrumboard);
@@ -84,9 +101,10 @@ void ConsoleLoop()
                 ScrumboardColumnId = columnId
             };
             // ScrumboardRepository.AddCard(cardToAdd);
-            ScrumboardService.AddCardEndOfColumn(columnId, cardToAdd);
+            CreateScrumboardService().AddCardEndOfColumn(columnId, cardToAdd);
 
-            scrumboard = ScrumboardRepository.LoadScrumboardWithColumnAndCardsById(scrumboardId);
+
+            scrumboard = CreateScrumboardRepository().LoadScrumboardWithColumnAndCardsById(scrumboardId);
             if (scrumboard is null) break;
             
             ScrumboardConsoleUtils.RenderScrumboardGrid(scrumboard);
@@ -96,7 +114,7 @@ void ConsoleLoop()
         case Choices.AddCardAtPosition:
         {
             var scrumboardId = AnsiConsole.Ask<int>("Please enter a scrumboard ID to add a card to:");
-            var scrumboard = ScrumboardRepository.LoadScrumboardWithColumnAndCardsById(scrumboardId);
+            var scrumboard = CreateScrumboardRepository().LoadScrumboardWithColumnAndCardsById(scrumboardId);
             if (scrumboard is null) break;
             
             ScrumboardConsoleUtils.RenderScrumboardGrid(scrumboard);
@@ -111,9 +129,9 @@ void ConsoleLoop()
                 ScrumboardColumnId = columnId
             };
             // ScrumboardRepository.AddCard(cardToAdd);
-            ScrumboardService.AddCardToOrder(columnId,  orderPosition, cardToAdd);
+            CreateScrumboardService().AddCardToOrder(columnId,  orderPosition, cardToAdd);
 
-            scrumboard = ScrumboardRepository.LoadScrumboardWithColumnAndCardsById(scrumboardId);
+            scrumboard = CreateScrumboardRepository().LoadScrumboardWithColumnAndCardsById(scrumboardId);
             if (scrumboard is null) break;
             
             ScrumboardConsoleUtils.RenderScrumboardGrid(scrumboard);
@@ -129,7 +147,7 @@ void ConsoleLoop()
 
 static void InitializeDatabase() {
     var db = new ScrumboardDbContext();
-
+    
     db.Database.EnsureDeleted();
     db.Database.EnsureCreated();
 
@@ -148,3 +166,4 @@ enum Choices
     AddCardToTheEndOfColumn,
     AddCardAtPosition
 }
+
