@@ -6,8 +6,8 @@ public class Scrumboard
 {
     public int Id { get; set; }
     public required string Name { get; set; }
-    
-    public ICollection<ScrumboardColumn> Columns { get; set; }
+
+    public List<ScrumboardColumn> Columns { get; set; } = new();
 }
 
 public class ScrumboardColumn
@@ -19,8 +19,8 @@ public class ScrumboardColumn
     
     public int ScrumboardId { get; set; }
     public Scrumboard Scrumboard { get; set; }
-    
-    public ICollection<Card> Cards { get; set; } = new List<Card>();
+
+    public List<Card> Cards { get; set; } = new();
 }
 
 public class Card
