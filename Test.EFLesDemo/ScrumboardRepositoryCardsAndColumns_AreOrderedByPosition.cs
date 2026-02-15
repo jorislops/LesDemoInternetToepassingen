@@ -59,14 +59,14 @@ public class Tests
     }
 
     [Test]
-    public void CardsAreOrderedByPosition()
+    public async Task CardsAreOrderedByPosition()
     {
         //Arrange
         var db = new ScrumboardDbContext(_contextOptionsBuilder.Options);
         var scrumboardRepository = new ScrumboardRepository(db);
         
         //Act
-        var scrumboards = scrumboardRepository.LoadScrumboardWithColumnAndCards();
+        var scrumboards = await scrumboardRepository.ListAsync(new ScrumboardSpecs.ScrumboardWithColumnsAndCardsSpec());
         
         //Assert
         scrumboards.Should().NotBeNullOrEmpty();
@@ -83,7 +83,7 @@ public class Tests
 
 
     [Test]
-    public void WhenCardIsAddedAtTheEndOfAColumnThenCardsAreOrderedByPosition()
+    public async Task WhenCardIsAddedAtTheEndOfAColumnThenCardsAreOrderedByPosition()
     {
         var scrumboardId = 1;
         
@@ -92,7 +92,8 @@ public class Tests
         var scrumboardRepository = new ScrumboardRepository(db);
         var scrumboardService = new ScrumboardService(db);
 
-        var scrumboard = scrumboardRepository.LoadScrumboardWithColumnAndCardsById(scrumboardId);
+        var scrumboard = await scrumboardRepository
+            .FirstOrDefaultAsync(new ScrumboardSpecs.ScrumboardWithColumnsAndCardsByIdSpec(scrumboardId));;
         scrumboard.Should().NotBeNull();
         var columnId = scrumboard.Columns.First().Id;
         
@@ -103,7 +104,8 @@ public class Tests
         });
         
         //Assert
-        var scrumboardToCheck = scrumboardRepository.LoadScrumboardWithColumnAndCardsById(1);
+        var scrumboardToCheck = await scrumboardRepository
+            .FirstOrDefaultAsync(new ScrumboardSpecs.ScrumboardWithColumnsAndCardsByIdSpec(scrumboardId));;
 
         scrumboardToCheck.Should().NotBeNull();
 
@@ -115,7 +117,7 @@ public class Tests
     }
     
     [Test]
-    public void WhenCardIsAddedAtAPositionThenCardsAreOrderedByPosition()
+    public async Task WhenCardIsAddedAtAPositionThenCardsAreOrderedByPosition()
     {
         var scrumboardId = 1;
         var position = 5;
@@ -125,7 +127,8 @@ public class Tests
         var scrumboardRepository = new ScrumboardRepository(db);
         var scrumboardService = new ScrumboardService(db);
 
-        var scrumboard = scrumboardRepository.LoadScrumboardWithColumnAndCardsById(scrumboardId);
+        var scrumboard = await scrumboardRepository
+            .FirstOrDefaultAsync(new ScrumboardSpecs.ScrumboardWithColumnsAndCardsByIdSpec(scrumboardId));
         scrumboard.Should().NotBeNull();
         var columnId = scrumboard.Columns.First().Id;
         
@@ -136,7 +139,8 @@ public class Tests
         });
         
         //Assert
-        scrumboard = scrumboardRepository.LoadScrumboardWithColumnAndCardsById(1);
+        scrumboard = await scrumboardRepository
+            .FirstOrDefaultAsync(new ScrumboardSpecs.ScrumboardWithColumnsAndCardsByIdSpec(scrumboardId));
 
         scrumboard.Should().NotBeNull();
 
@@ -148,7 +152,7 @@ public class Tests
     }
     
     [Test]
-    public void WhenCardIsAddedAtAPositionThenCardsAreOrderedByPosition2()
+    public async Task WhenCardIsAddedAtAPositionThenCardsAreOrderedByPosition2()
     {
         var scrumboardId = 1;
         var position = 5;
@@ -158,7 +162,8 @@ public class Tests
         var scrumboardRepository = new ScrumboardRepository(db);
         var scrumboardService = new ScrumboardService(db);
 
-        var scrumboard = scrumboardRepository.LoadScrumboardWithColumnAndCardsById(scrumboardId);
+        var scrumboard = await scrumboardRepository
+            .FirstOrDefaultAsync(new ScrumboardSpecs.ScrumboardWithColumnsAndCardsByIdSpec(scrumboardId));
         scrumboard.Should().NotBeNull();
         var columnId = scrumboard.Columns.First().Id;
         
@@ -169,7 +174,8 @@ public class Tests
         });
         
         //Assert
-        scrumboard = scrumboardRepository.LoadScrumboardWithColumnAndCards().FirstOrDefault();
+        scrumboard = await scrumboardRepository
+            .FirstOrDefaultAsync(new ScrumboardSpecs.ScrumboardWithColumnsAndCardsByIdSpec(scrumboardId));
 
         scrumboard.Should().NotBeNull();
 

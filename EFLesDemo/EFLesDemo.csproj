@@ -8,10 +8,18 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="Ardalis.Specification" Version="9.3.1" />
+      <PackageReference Include="Ardalis.Specification.EntityFrameworkCore" Version="9.3.1" />
       <PackageReference Include="Bogus" Version="35.6.5" />
       <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.2" />
       <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.0" />
       <PackageReference Include="Spectre.Console" Version="0.54.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="Entities\ScrumboardSpecs.cs">
+        <DependentUpon>ScrumboardRepository.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
 
 </Project>
