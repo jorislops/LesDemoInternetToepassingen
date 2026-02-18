@@ -1,7 +1,6 @@
-using EFLesDemo;
 using EFLesDemo.Entities;
 
-namespace EFLesDemo;
+namespace EFLesDemo.Services;
 
 public class ScrumboardService(ScrumboardDbContext _db)
 {

@@ -4,7 +4,7 @@ using EFLesDemo;
 using EFLesDemo.Entities;
 using EFLesDemo.Repositories;
 using Spectre.Console;
-using ScrumboardService = EFLesDemo.ScrumboardService;
+using ScrumboardService = EFLesDemo.Services.ScrumboardService;
 
 
 InitializeDatabase();
