@@ -1,6 +1,7 @@
 using Ardalis.Specification;
+using EFLesDemo.Entities;
 
-namespace EFLesDemo.Entities;
+namespace EFLesDemo.Repositories;
 
 public class ScrumboardSpecs
 {

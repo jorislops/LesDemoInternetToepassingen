@@ -1,8 +1,8 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
-using Ardalis.Specification;
 using EFLesDemo;
 using EFLesDemo.Entities;
+using EFLesDemo.Repositories;
 using Spectre.Console;
 using ScrumboardService = EFLesDemo.ScrumboardService;
 
@@ -190,14 +190,17 @@ static void InitializeDatabase() {
     db.SaveChanges();
 }
 
-enum Choices
+namespace EFLesDemo
 {
-    DisplayScrumboardWithId,
-    DisplayAllScrumboards,
-    DeleteScrumboard,
-    Exit,
-    DeleteScrumCard,
-    AddCardToTheEndOfColumn,
-    AddCardAtPosition
+    enum Choices
+    {
+        DisplayScrumboardWithId,
+        DisplayAllScrumboards,
+        DeleteScrumboard,
+        Exit,
+        DeleteScrumCard,
+        AddCardToTheEndOfColumn,
+        AddCardAtPosition
+    }
 }
 

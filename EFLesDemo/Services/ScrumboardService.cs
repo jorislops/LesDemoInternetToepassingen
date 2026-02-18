@@ -31,7 +31,7 @@ public class ScrumboardService(ScrumboardDbContext _db)
         
         cardsWithHigherOrder.ForEach(x => x.Order = x.Order + 1);
         //no need to update the changes!!!!
-        //EF tracks entities
+        //EF tracks entities (change tracker)
 
         card.Order = order;
         

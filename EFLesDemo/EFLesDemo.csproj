@@ -17,8 +17,11 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Compile Update="Entities\ScrumboardSpecs.cs">
-        <DependentUpon>ScrumboardRepository.cs</DependentUpon>
+      <Compile Update="Repositories\ScrumboardRepository.cs">
+        <DependentUpon>IScrumboardRepository.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Repositories\CardRepository.cs">
+        <DependentUpon>ISCardRepository.cs</DependentUpon>
       </Compile>
     </ItemGroup>
 

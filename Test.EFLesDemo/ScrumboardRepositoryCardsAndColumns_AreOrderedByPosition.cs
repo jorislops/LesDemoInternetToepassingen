@@ -1,5 +1,6 @@
 ﻿using EFLesDemo;
 using EFLesDemo.Entities;
+using EFLesDemo.Repositories;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Testcontainers.PostgreSql;

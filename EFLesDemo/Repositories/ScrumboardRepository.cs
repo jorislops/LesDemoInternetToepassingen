@@ -1,9 +1,9 @@
-using Ardalis.Specification;
 using Ardalis.Specification.EntityFrameworkCore;
+using EFLesDemo.Entities;
 
-namespace EFLesDemo.Entities;
+namespace EFLesDemo.Repositories;
 
-public class ScrumboardRepository(ScrumboardDbContext db) : RepositoryBase<Scrumboard>(db)
+public class ScrumboardRepository(ScrumboardDbContext db) : RepositoryBase<Scrumboard>(db), IScrumboardRepository
 {
     // public List<Scrumboard> ListScrumboards(ISpecification<Scrumboard> spec)
     // {
