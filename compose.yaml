@@ -17,3 +17,9 @@
       context: .
       dockerfile: ScrumboardApi/Dockerfile
 
+  scrumboard.frontend:
+    image: scrumboard.frontend
+    build:
+      context: .
+      dockerfile: Scrumboard.FrontEnd/Dockerfile
+
