@@ -27,4 +27,12 @@ public class ScrumboardSpecs
                 .ThenInclude(column => column.Cards.OrderBy(card => card.Order));
         }
     }
+
+    public class ScrumboardCardByIdSpec : Specification<ScrumboardCard>
+    {
+        public ScrumboardCardByIdSpec(int id)
+        {
+            Query.Where(scrumboard => scrumboard.Id == id);
+        }
+    }
 }

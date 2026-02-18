@@ -1,6 +1,6 @@
 namespace EFLesDemo.Entities;
 
-public class Card
+public class ScrumboardCard
 {
     public int Id { get; set; }
     public required string Name { get; set; }

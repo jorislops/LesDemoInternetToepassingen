@@ -22,8 +22,8 @@ public class DBSeeder
             .RuleFor(x => x.Order, f => f.IndexFaker)
             .Generate(numOfScrumboards);
 
-    private static List<Card> SeedCards(int numOfCards) =>
-        new Faker<Card>()
+    private static List<ScrumboardCard> SeedCards(int numOfCards) =>
+        new Faker<ScrumboardCard>()
             .RuleFor(x => x.Name, f => f.Lorem.Sentence(f.Random.Int(2, 5)))
             .RuleFor(x => x.Order, f => f.IndexFaker)
             .Generate(numOfCards);
