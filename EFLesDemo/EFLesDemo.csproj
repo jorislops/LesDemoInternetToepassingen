@@ -20,8 +20,11 @@
       <Compile Update="Repositories\ScrumboardRepository.cs">
         <DependentUpon>IScrumboardRepository.cs</DependentUpon>
       </Compile>
-      <Compile Update="Repositories\CardRepository.cs">
-        <DependentUpon>ISCardRepository.cs</DependentUpon>
+      <Compile Update="Repositories\ScrumCardRepository.cs">
+        <DependentUpon>IScrumCardRepository.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Services\ScrumboardService.cs">
+        <DependentUpon>IScrumboardService.cs</DependentUpon>
       </Compile>
     </ItemGroup>
 

@@ -100,9 +100,10 @@ public class Tests
         var columnId = scrumboard.Columns.First().Id;
         
         //Act
-        scrumboardService.AddCardEndOfColumn(columnId, new Card
+        scrumboardService.InsertOrUpdateCardPreserveOrder(new ScrumboardCard
         {
             Name = "test",
+            ScrumboardColumnId =  columnId,
         });
         
         //Assert
@@ -122,7 +123,7 @@ public class Tests
     public async Task WhenCardIsAddedAtAPositionThenCardsAreOrderedByPosition()
     {
         var scrumboardId = 1;
-        var position = 5;
+        var order = 5;
         
         //Arrange
         var db = new ScrumboardDbContext(_contextOptionsBuilder.Options);
@@ -135,9 +136,11 @@ public class Tests
         var columnId = scrumboard.Columns.First().Id;
         
         //Act
-        scrumboardService.AddCardToOrder(columnId, position,  new Card
+        scrumboardService.InsertOrUpdateCardPreserveOrder(new ScrumboardCard
         {
             Name = "test",
+            ScrumboardColumnId = columnId,
+            Order = order
         });
         
         //Assert
@@ -157,7 +160,7 @@ public class Tests
     public async Task WhenCardIsAddedAtAPositionThenCardsAreOrderedByPosition2()
     {
         var scrumboardId = 1;
-        var position = 5;
+        var order = 5;
         
         //Arrange
         var db = new ScrumboardDbContext(_contextOptionsBuilder.Options);
@@ -170,9 +173,11 @@ public class Tests
         var columnId = scrumboard.Columns.First().Id;
         
         //Act
-        scrumboardService.AddCardToOrder(columnId, position,  new Card
+        scrumboardService.InsertOrUpdateCardPreserveOrder(new ScrumboardCard
         {
             Name = "test",
+            ScrumboardColumnId =  columnId,
+            Order = order
         });
         
         //Assert

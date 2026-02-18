@@ -26,10 +26,10 @@ static ScrumboardService CreateScrumboardService()
     return scrumboardService;
 }
 
-static CardRepository CreateCardRepository()
+static ScrumCardRepository CreateCardRepository()
 {
     var db = new ScrumboardDbContext();
-    var cardRepository = new CardRepository(db);
+    var cardRepository = new ScrumCardRepository(db);
     return cardRepository;
 }
 
@@ -126,13 +126,13 @@ async Task ConsoleLoop()
             
             var columnId = AnsiConsole.Ask<int>("Please enter a column ID to add the card to:");
 
-            var cardToAdd = new Card()
+            var cardToAdd = new ScrumboardCard()
             {
                 Name = AnsiConsole.Ask<string>("Enter the name of the card to be added:"),
                 ScrumboardColumnId = columnId
             };
             // ScrumboardRepository.AddCard(cardToAdd);
-            CreateScrumboardService().AddCardEndOfColumn(columnId, cardToAdd);
+            CreateScrumboardService().InsertOrUpdateCardPreserveOrder(cardToAdd);
 
 
             scrumboard = await CreateScrumboardRepository().FirstOrDefaultAsync(
@@ -156,13 +156,14 @@ async Task ConsoleLoop()
 
             var orderPosition = AnsiConsole.Ask<int>("Please enter the position of the card to add:");
             
-            var cardToAdd = new Card()
+            var cardToAdd = new ScrumboardCard()
             {
                 Name = AnsiConsole.Ask<string>("Enter the name of the card to be added:"),
-                ScrumboardColumnId = columnId
+                ScrumboardColumnId = columnId,
+                Order =  orderPosition
             };
             // ScrumboardRepository.AddCard(cardToAdd);
-            CreateScrumboardService().AddCardToOrder(columnId,  orderPosition, cardToAdd);
+            CreateScrumboardService().InsertOrUpdateCardPreserveOrder(cardToAdd);
 
             scrumboard = await CreateScrumboardRepository().FirstOrDefaultAsync(
                 new ScrumboardSpecs.ScrumboardWithColumnsAndCardsByIdSpec(scrumboardId));

@@ -10,5 +10,5 @@ public class ScrumboardColumn
     public int ScrumboardId { get; set; }
     public Scrumboard Scrumboard { get; set; }
 
-    public List<Card> Cards { get; set; } = new();
+    public List<ScrumboardCard> Cards { get; set; } = new();
 }

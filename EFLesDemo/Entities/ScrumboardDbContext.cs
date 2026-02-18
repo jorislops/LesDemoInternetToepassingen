@@ -7,7 +7,7 @@ public class ScrumboardDbContext : DbContext
 {
     public DbSet<Scrumboard> Scrumboards { get; set; }
     public DbSet<ScrumboardColumn> Columns { get; set; }
-    public DbSet<Card> Cards { get; set; }
+    public DbSet<ScrumboardCard> Cards { get; set; }
 
     public ScrumboardDbContext() : base()
     {

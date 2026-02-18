@@ -3,4 +3,4 @@ using EFLesDemo.Entities;
 
 namespace EFLesDemo.Repositories;
 
-public interface ISCardRepository : IRepositoryBase<Card> {}
+public interface IScrumCardRepository : IRepositoryBase<ScrumboardCard> {}

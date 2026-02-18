@@ -1,0 +1,19 @@
+﻿services:
+  scrumboardapi:
+    image: scrumboardapi
+    build:
+      context: .
+      dockerfile: ScrumboardApi/Dockerfile
+
+  webapplication1:
+    image: webapplication1
+    build:
+      context: .
+      dockerfile: WebApplication1/Dockerfile
+
+  scrumboardapi-1:
+    image: scrumboardapi-1
+    build:
+      context: .
+      dockerfile: ScrumboardApi/Dockerfile
+
