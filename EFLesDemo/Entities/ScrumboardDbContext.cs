@@ -18,6 +18,13 @@ public class ScrumboardDbContext : DbContext
         
     }
 
+    // override protected void OnModelCreating(ModelBuilder modelBuilder)
+    // {
+    //     modelBuilder.Entity<ScrumboardColumn>()
+    //         .HasMany<Card>().WithOne(scrumboardColumn => scrumboardColumn.ScrumboardColumn)
+    //         .OnDelete(DeleteBehavior.Cascade);
+    // }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         base.OnConfiguring(optionsBuilder);

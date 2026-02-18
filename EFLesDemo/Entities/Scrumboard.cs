@@ -30,6 +30,8 @@ public class Card
     
     public int Order { get; set; }
     
+    public DateOnly Date { get; set; }
+    
     public int ScrumboardColumnId { get; set; }
     public ScrumboardColumn ScrumboardColumn { get; set; }
 }

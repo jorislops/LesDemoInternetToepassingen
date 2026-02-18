@@ -3,8 +3,14 @@
 using Ardalis.Specification;
 using EFLesDemo;
 using EFLesDemo.Entities;
+using EFLesDemo.Ports;
+using EFLesDemo.UseCase;
+using LanguageExt;
+using Microsoft.EntityFrameworkCore;
 using Spectre.Console;
 using ScrumboardService = EFLesDemo.ScrumboardService;
+
+using AskInt = System.Func<string, LanguageExt.Eff<int>>;
 
 
 InitializeDatabase();
@@ -35,8 +41,79 @@ static CardRepository CreateCardRepository()
 
 
 
+
+
+
 async Task ConsoleLoop()
 {
+    
+    // Eff<Unit> DeleteScrumboardById(Env env) => 
+    //     from boardId in env.Console.AskInt("Please enter an Id for scrumboard delete") 
+    //     from scrumboard in env.ScrumboardRepository.GetByIdWithColumnsAndCards(boardId) 
+    //     from _ in scrumboard.Match(
+    //         Some: board => env.ScrumboardRepository.Delete(board), 
+    //         None: () => Eff.Success(Unit.Default)) 
+    //     select Unit.Default;
+
+    Func<int, Eff<Unit>> DisplayScrumboard(Env env) => (int scrumboardId) => 
+        from scrumboard in env.ScrumboardRepository.GetByIdWithColumnsAndCards(scrumboardId) 
+        from _ in 
+            scrumboard.Match(
+                Some: board => env.Console.RenderScrumboard(board), 
+                None: () => Eff.Success(Unit.Default)) 
+        select Unit.Default;
+
+    Eff<Unit> DisplayScrumboardById(Env env) => 
+        from boardId in env.Console.AskInt("Please enter a scrumboard id") 
+        from _ in DisplayScrumboard(env)(boardId) 
+        select Unit.Default;
+    
+    Eff<Unit> DeleteScrumCard(Env env) =>
+        from boardId in env.Console.AskInt("Please enter a scrumboard id")
+        from _ in DisplayScrumboard(env)(boardId)
+        from cardId in env.Console.AskInt("Please enter a card id")
+        from __ in env.CardRepository.Delete(cardId)
+        select Unit.Default;
+    
+    
+    // var scrumboardRepo = CreateScrumboardRepository();
+    //
+    // var scumboardId = AnsiConsole.Ask<int>("Please enter a scrumboard ID to display:");
+    //
+    // var spec = new ScrumboardSpecs.ScrumboardWithColumnsAndCardsByIdSpec(scumboardId);
+    // var scrumboard = await scrumboardRepo.FirstOrDefaultAsync(spec);
+    // if (scrumboard is not null)
+    // {
+    //     ScrumboardConsoleUtils.RenderScrumboardGrid(scrumboard);
+    // }
+    // else
+    // {
+    //     AnsiConsole.MarkupLine($"No Scrumboard found for ID: {scumboardId}.");
+    // }
+    //
+    // var cardRepo = CreateCardRepository();
+    //
+    // var scrumCardId = AnsiConsole.Ask<int>("Please Enter a card ID to delete:");
+    // var scrumCard =  await cardRepo.GetByIdAsync(scrumCardId);
+    // if (scrumCard is null) break;
+    //
+    // await CreateCardRepository().DeleteAsync(scrumCard);
+    //
+    // scrumboard = await scrumboardRepo.FirstOrDefaultAsync(
+    //     new ScrumboardSpecs.ScrumboardWithColumnsAndCardsByIdSpec(scumboardId));
+    // if (scrumboard != null) ScrumboardConsoleUtils.RenderScrumboardGrid(scrumboard);
+    // break;    
+    
+
+    Func<ScrumboardRepository> createScrumboardRepository = () => CreateScrumboardRepository();
+    Func<CardRepository> cardRepoFactory = () => CreateCardRepository();
+    
+    var env = new Env(
+        Console: new SpectreConsolePort(), 
+        ScrumboardRepository: new ScrumboardRepoPort(createScrumboardRepository), 
+        CardRepository: new CardRepositoryPort(cardRepoFactory) 
+    );
+    
     var choice = AnsiConsole.Prompt(
         new SelectionPrompt<Choices>()
             .Title("Please select a [green]option[/]:")
@@ -45,10 +122,15 @@ async Task ConsoleLoop()
 
     AnsiConsole.Clear();
     AnsiConsole.MarkupLine($"You selected [yellow]{choice}.[/]");
+
+    
     
     switch (choice)
     {
         case Choices.DisplayAllScrumboards:
+            
+            
+            
             var scrumboards = 
                 await CreateScrumboardRepository()
                     .ListAsync(new ScrumboardSpecs.ScrumboardWithColumnsAndCardsSpec());
@@ -57,62 +139,39 @@ async Task ConsoleLoop()
         
         case Choices.DisplayScrumboardWithId:
         {
-            var scumboardId = AnsiConsole.Ask<int>("Please enter a scrumboard ID to display:");
-
-            var spec = new ScrumboardSpecs.ScrumboardWithColumnsAndCardsByIdSpec(scumboardId);
-            var scrumboard = await CreateScrumboardRepository().FirstOrDefaultAsync(spec);
-            
-            if (scrumboard is not null)
-            {
-                ScrumboardConsoleUtils.RenderScrumboardGrid(scrumboard);
-            }
-            else
-            {
-                AnsiConsole.MarkupLine($"No Scrumboard found for ID: {scumboardId}.");
-            }
+            var run = DisplayScrumboardById(env).Run();
+            run.IfFail(error => Console.WriteLine(error));
             break;
         }
         case Choices.DeleteScrumboard:
         {
-            var scumboardId = AnsiConsole.Ask<int>("Please Enter a scrumboard ID to delete:");
-
-            var scrumboardToDelete = await CreateScrumboardRepository().GetByIdAsync(scumboardId);
-            if (scrumboardToDelete is not null)
-            {
-                await CreateScrumboardRepository().DeleteAsync(scrumboardToDelete);
-            }
+            var w = 
+                from id in env.Console.AskInt("Please enter a scrumboard ID to delete:")
+                from _ in DeleteScrumboardByIdUseCase.DeleteIfFound(
+                    env.ScrumboardRepository.GetByIdWithColumnsAndCards,
+                    env.ScrumboardRepository.Delete)(id)
+                select Unit.Default;
+            var r = w.Run();
+            r.Match(Succ: unit => Console.WriteLine(unit), Console.WriteLine);
             
-            // CreateScrumboardRepository().DeleteAsync(scumboardId);
+            
+            // DeleteScrumboardByIdUseCase
+            //     .DeleteScrumboardById(
+            //         env.Console.AskInt, 
+            //         env.ScrumboardRepository.GetByIdWithColumnsAndCards, 
+            //         env.ScrumboardRepository.Delete
+            //     )
+            //     .Run();
+            // throw new NotImplementedException();
+            // var run = DeleteScrumboardById(env).Run();
+            // run.IfFail(error => Console.WriteLine(error));
+            
             break;
         }
         case Choices.DeleteScrumCard:
         {
-            var scrumboardRepo = CreateScrumboardRepository();
-            
-            var scumboardId = AnsiConsole.Ask<int>("Please enter a scrumboard ID to display:");
-            
-            var spec = new ScrumboardSpecs.ScrumboardWithColumnsAndCardsByIdSpec(scumboardId);
-            var scrumboard = await scrumboardRepo.FirstOrDefaultAsync(spec);
-            if (scrumboard is not null)
-            {
-                ScrumboardConsoleUtils.RenderScrumboardGrid(scrumboard);
-            }
-            else
-            {
-                AnsiConsole.MarkupLine($"No Scrumboard found for ID: {scumboardId}.");
-            }
-
-            var cardRepo = CreateCardRepository();
-            
-            var scrumCardId = AnsiConsole.Ask<int>("Please Enter a card ID to delete:");
-            var scrumCard =  await cardRepo.GetByIdAsync(scrumCardId);
-            if (scrumCard is null) break;
-            
-            await CreateCardRepository().DeleteAsync(scrumCard);
-
-            scrumboard = await scrumboardRepo.FirstOrDefaultAsync(
-                new ScrumboardSpecs.ScrumboardWithColumnsAndCardsByIdSpec(scumboardId));
-            if (scrumboard != null) ScrumboardConsoleUtils.RenderScrumboardGrid(scrumboard);
+            var run = DeleteScrumCard(env).Run();
+            run.IfFail(error => Console.WriteLine(error));
             break;
         }
         case Choices.AddCardToTheEndOfColumn:
@@ -179,15 +238,19 @@ async Task ConsoleLoop()
     await ConsoleLoop();
 }
 
+
+
+    
+
 static void InitializeDatabase() {
     var db = new ScrumboardDbContext();
-    
+
     db.Database.EnsureDeleted();
     db.Database.EnsureCreated();
 
     var scrumboard = DBSeeder.Seed();
     db.Scrumboards.AddRange(scrumboard);
-    db.SaveChanges();
+    db.SaveChanges();    
 }
 
 enum Choices

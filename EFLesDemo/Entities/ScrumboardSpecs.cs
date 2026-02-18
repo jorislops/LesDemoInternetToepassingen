@@ -19,6 +19,7 @@ public class ScrumboardSpecs
     {
         public ScrumboardWithColumnsAndCardsByIdSpec(int scrumboardId)
         {
+            
             Query
                 .AsNoTracking()
                 .Where(scrumboard => scrumboard.Id == scrumboardId)
